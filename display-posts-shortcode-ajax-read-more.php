@@ -99,6 +99,7 @@ if ( ! class_exists( 'Display_Posts_AJAX_Read_More' ) ) {
 		 */
 		private function hooks() {
 
+			add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueueScript' ) );
 			add_filter( 'display_posts_shortcode_args', array( __CLASS__, 'shortcodeArgs' ), 10, 2 );
 			add_filter( 'display_posts_shortcode_output', array( __CLASS__, 'addPostID' ), 10, 11 );
 		}
@@ -117,6 +118,29 @@ if ( ! class_exists( 'Display_Posts_AJAX_Read_More' ) ) {
 		public function getURL() {
 
 			return $this->url;
+		}
+
+		/**
+		 * Callback for the `wp_enqueue_scripts` action.
+		 *
+		 * @since 1.0
+		 */
+		public static function enqueueScript() {
+
+			$debug = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG;
+
+			$path = Display_Posts_AJAX_Read_More()->getPath();
+			$url  = Display_Posts_AJAX_Read_More()->getURL();
+
+			$min     = $debug ? '' : '.min';
+			$version = $debug ? self::VERSION . '-' . filemtime( "{$path}assets/css/public{$min}.css" ): self::VERSION;
+
+			wp_enqueue_style(
+				'dps-ajax-read-more',
+				"{$url}assets/css/public{$min}.css",
+				array(),
+				$version
+			);
 		}
 
 		/**
@@ -187,8 +211,9 @@ if ( ! class_exists( 'Display_Posts_AJAX_Read_More' ) ) {
 			$post_id      = "post-{$id}";
 			$class[]      = $post_id;
 			$post_id_span = "<span id='{$post_id}' style='display: none;' data-post-id='{$id}'></span>";
+			$loading      = '<span class="dps-arm-loading-overlay" style="display: none;"><span class="dps-arm-loading"></span></span>';
 
-			$output = '<' . $inner_wrapper . ' class="' . implode( ' ', $class ) . '">' . $post_id_span . $image . $title . $date . $author . $category_display_text . $excerpt . $content . '</' . $inner_wrapper . '>';
+			$output = '<' . $inner_wrapper . ' class="' . implode( ' ', $class ) . '">' . $post_id_span . $loading . $image . $title . $date . $author . $category_display_text . $excerpt . $content . '</' . $inner_wrapper . '>';
 
 			return $output;
 		}
