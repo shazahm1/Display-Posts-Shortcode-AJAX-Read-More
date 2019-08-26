@@ -1,7 +1,7 @@
 // noinspection JSUnresolvedVariable
 ( function( $ ) {
 
-	$( '.display-posts-listing .excerpt-more' ).click( function( e ) {
+	$( '.display-posts-listing ' ).on( 'click', '.excerpt-more', function( e ) {
 
 		e.preventDefault();
 
