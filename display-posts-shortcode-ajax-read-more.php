@@ -87,7 +87,7 @@ if ( ! class_exists( 'Display_Posts_AJAX_Read_More' ) ) {
 				$self->basename = plugin_basename( $self->file );
 
 				$self->hooks();
-				$self->registerJavaScripts();
+				//$self->registerJavaScripts();
 			}
 
 			return self::$instance;
@@ -100,6 +100,7 @@ if ( ! class_exists( 'Display_Posts_AJAX_Read_More' ) ) {
 		private function hooks() {
 
 			add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueueScript' ) );
+			add_action( 'wp_enqueue_scripts', array( __CLASS__, 'registerJavaScripts' ) );
 			add_filter( 'display_posts_shortcode_args', array( __CLASS__, 'shortcodeArgs' ), 10, 2 );
 			add_filter( 'display_posts_shortcode_output', array( __CLASS__, 'addPostID' ), 10, 11 );
 		}
@@ -146,7 +147,7 @@ if ( ! class_exists( 'Display_Posts_AJAX_Read_More' ) ) {
 		/**
 		 * @since 1.0
 		 */
-		private function registerJavaScripts() {
+		public static function registerJavaScripts() {
 
 			$debug = defined('SCRIPT_DEBUG') && SCRIPT_DEBUG;
 
