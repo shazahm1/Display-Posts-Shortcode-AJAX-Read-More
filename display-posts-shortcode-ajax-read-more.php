@@ -237,7 +237,19 @@ if ( ! class_exists( 'Display_Posts_AJAX_Read_More' ) ) {
 		 *
 		 * @return mixed
 		 */
-		public static function addPostID( $output, $original_atts, $image, $title, $date, $excerpt, $inner_wrapper, $content, $class, $author, $category_display_text ) {
+		public static function addPostID(
+			$output,
+			$original_atts,
+			$image,
+			$title,
+			$date,
+			$excerpt,
+			$inner_wrapper,
+			$content,
+			$class,
+			$author,
+			$category_display_text
+		) {
 
 			$options = Display_Posts_AJAX_Read_More()->shortcodeAtts( $original_atts );
 
