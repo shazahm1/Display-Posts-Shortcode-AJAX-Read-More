@@ -136,7 +136,7 @@ if ( ! class_exists( 'Display_Posts_AJAX_Read_More' ) ) {
 			$min     = $debug ? '' : '.min';
 			$version = $debug ? self::VERSION . '-' . filemtime( "{$path}assets/css/public{$min}.css" ): self::VERSION;
 
-			wp_enqueue_style(
+			wp_register_style(
 				'dps-ajax-read-more',
 				"{$url}assets/css/public{$min}.css",
 				array(),
@@ -167,6 +167,35 @@ if ( ! class_exists( 'Display_Posts_AJAX_Read_More' ) ) {
 		}
 
 		/**
+		 * @since 1.0
+		 *
+		 * @return array
+		 */
+		public function getDefaults() {
+
+			return array(
+				'excerpt_more_ajax'  => FALSE,
+			);
+		}
+
+		/**
+		 * @since 1.0
+		 *
+		 * @param array $untrusted The user defined shortcode attributes.
+		 *
+		 * @return array
+		 */
+		public function shortcodeAtts( $untrusted ) {
+
+			$defaults = Display_Posts_AJAX_Read_More()->getDefaults();
+			$atts     = shortcode_atts( $defaults, $untrusted, FALSE );
+
+			self::toBoolean( $atts['excerpt_more_ajax'] );
+
+			return $atts;
+		}
+
+		/**
 		 * Callback for the `display_posts_shortcode_args` filter.
 		 *
 		 * @since 1.0
@@ -178,10 +207,12 @@ if ( ! class_exists( 'Display_Posts_AJAX_Read_More' ) ) {
 		 */
 		public static function shortcodeArgs( $args, $original_atts ) {
 
-			if ( ! empty( $original_atts['excerpt_more_ajax'] ) &&
-			     TRUE === filter_var( $original_atts['excerpt_more_ajax'], FILTER_VALIDATE_BOOLEAN ) ) {
+			$options = Display_Posts_AJAX_Read_More()->shortcodeAtts( $original_atts );
+
+			if ( TRUE === $options['excerpt_more_ajax'] ) {
 
 				wp_enqueue_script( 'dps-ajax-read-more' );
+				wp_enqueue_style( 'dps-ajax-read-more' );
 			}
 
 			return $args;
@@ -208,6 +239,10 @@ if ( ! class_exists( 'Display_Posts_AJAX_Read_More' ) ) {
 		 */
 		public static function addPostID( $output, $original_atts, $image, $title, $date, $excerpt, $inner_wrapper, $content, $class, $author, $category_display_text ) {
 
+			$options = Display_Posts_AJAX_Read_More()->shortcodeAtts( $original_atts );
+
+			if ( TRUE !== $options['excerpt_more_ajax'] ) return $output;
+
 			$id           = get_the_ID();
 			$post_id      = "post-{$id}";
 			$class[]      = $post_id;
@@ -219,6 +254,30 @@ if ( ! class_exists( 'Display_Posts_AJAX_Read_More' ) ) {
 			return $output;
 		}
 
+		/**
+		 * Converts the following strings: yes/no; true/false and 0/1 to boolean values.
+		 * If the supplied string does not match one of those values the method will return NULL.
+		 *
+		 * @since 1.0
+		 *
+		 * @param string|int|bool $value
+		 *
+		 * @return bool
+		 */
+		public static function toBoolean( &$value ) {
+
+			// Already a bool, return it.
+			if ( is_bool( $value ) ) return $value;
+
+			$value = filter_var( strtolower( $value ), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE );
+
+			if ( is_null( $value ) ) {
+
+				$value = FALSE;
+			}
+
+			return $value;
+		}
 	}
 
 	/**
