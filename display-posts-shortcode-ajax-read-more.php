@@ -223,7 +223,7 @@ if ( ! class_exists( 'Display_Posts_AJAX_Read_More' ) ) {
 		 *
 		 * @since 1.0
 		 *
-		 * @param string $output        The shortcode's HTML output.
+		 * @param string $html          The shortcode's HTML output.
 		 * @param array  $original_atts Original attributes passed to the shortcode.
 		 * @param string $image         HTML markup for the post's featured image element.
 		 * @param string $title         HTML markup for the post's title element.
@@ -238,7 +238,7 @@ if ( ! class_exists( 'Display_Posts_AJAX_Read_More' ) ) {
 		 * @return mixed
 		 */
 		public static function addPostID(
-			$output,
+			$html,
 			$original_atts,
 			$image,
 			$title,
@@ -253,7 +253,7 @@ if ( ! class_exists( 'Display_Posts_AJAX_Read_More' ) ) {
 
 			$options = Display_Posts_AJAX_Read_More()->shortcodeAtts( $original_atts );
 
-			if ( TRUE !== $options['excerpt_more_ajax'] ) return $output;
+			if ( TRUE !== $options['excerpt_more_ajax'] ) return $html;
 
 			$id           = get_the_ID();
 			$post_id      = "post-{$id}";
@@ -261,9 +261,9 @@ if ( ! class_exists( 'Display_Posts_AJAX_Read_More' ) ) {
 			$post_id_span = "<span id='{$post_id}' style='display: none;' data-post-id='{$id}'></span>";
 			$loading      = '<span class="dps-arm-loading-overlay" style="display: none;"><span class="dps-arm-loading"></span></span>';
 
-			$output = '<' . $inner_wrapper . ' class="' . implode( ' ', $class ) . '">' . $post_id_span . $loading . $image . $title . $date . $author . $category_display_text . $excerpt . $content . '</' . $inner_wrapper . '>';
+			$html = '<' . $inner_wrapper . ' class="' . implode( ' ', $class ) . '">' . $post_id_span . $loading . $image . $title . $date . $author . $category_display_text . $excerpt . $content . '</' . $inner_wrapper . '>';
 
-			return $output;
+			return $html;
 		}
 
 		/**
